@@ -2020,28 +2020,1463 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
 
 },{}],4:[function(require,module,exports){
 (function (Buffer){(function (){
-(function(){function t(c){switch(c.toUpperCase()){case "WINDOWS-31J":case "CP932":case "SJIS":case "SHIFTJIS":case "SHIFT_JIS":return"SJIS";case "EUCJP":case "EUC-JP":return"EUCJP";case "JIS":case "ISO2022JP":case "ISO-2022-JP":case "ISO-2022-JP-1":return"JIS";case "UTF8":case "UTF-8":return"UTF8";case "UNICODE":case "UCS2":case "UCS-2":case "UTF16LE":case "UTF-16LE":return"UCS2";default:return""}}function q(c,k,g){128>c?k[g++]=c:(2048>c?k[g++]=192|c>>>6:(65536>c?k[g++]=224|c>>>12:(2097152>c?k[g++]=
-240|c>>>18:(67108864>c?k[g++]=248|c>>>24:(k[g++]=252|c/1073741824,k[g++]=128|c>>>24&63),k[g++]=128|c>>>18&63),k[g++]=128|c>>>12&63),k[g++]=128|c>>>6&63),k[g++]=128|c&63);return g}function r(c,k,g){k[g++]=c&255;k[g++]=c>>8;return g}var p={SJIS:require("./tables/SJIS"),JIS:require("./tables/JIS"),JISEXT:require("./tables/JISEXT"),SJISInverted:require("./tables/SJISInverted"),JISInverted:require("./tables/JISInverted"),JISEXTInverted:require("./tables/JISEXTInverted")},s={},n=module.exports=function(c,
-k,g){return n.convert(c,k,g)};n.defineEncoding=function(c){s[c.name]=new function(c){this.name=c.name;this.convert=c.convert}(c)};n.convert=function(c,k,g){k=t(k);g=t(g);if(!k||!g)throw Error("Encoding not recognized.");c=c||new Buffer(0);c=c instanceof Buffer?c:new Buffer(c.toString(),"UTF8");if(k===g)return c;var h=s[k+"to"+g];if(h)return h.convert(c);k=s[k+"toUCS2"];g=s["UCS2to"+g];if(k&&g)return g.convert(k.convert(c));throw Error("Encoding not recognized.");};n.decode=function(c,k){switch(k.toUpperCase()){case "BINARY":case "BASE64":case "ASCII":case "HEX":case "UTF8":case "UTF-8":case "UNICODE":case "UCS2":case "UCS-2":case "UTF16LE":case "UTF-16LE":return c.toString(k);
-default:return n.convert(c,k,"UCS2").toString("UCS2")}};n.encode=function(c,k){switch(k.toUpperCase()){case "BASE64":case "ASCII":case "HEX":case "UTF8":case "UTF-8":return new Buffer(c,k);default:return n.convert(c,"UTF8",k)}};n.encodingExists=function(c){return t(c)?!0:!1};n.defineEncoding({name:"UCS2toUTF8",convert:function(c){for(var k=c.length,g=new Buffer(3*k),h=0,f,b=0;b<k;)f=c[b++],f=(c[b++]<<8)+f,h=q(f,g,h);return g.slice(0,h)}});n.defineEncoding({name:"UCS2toSJIS",convert:function(c){for(var k=
-p.SJISInverted,g=k[12539],h=c.length,f=new Buffer(h),b=0,a,d=0;d<h;)a=c[d++],a=(c[d++]<<8)+a,128>a?f[b++]=a:65377<=a&&65439>=a?f[b++]=a-65216:(a=k[a]||g,f[b++]=a>>8,f[b++]=a&255);return f.slice(0,b)}});n.defineEncoding({name:"UCS2toJIS",convert:function(c){for(var k=p.JISInverted,g=p.JISEXTInverted,h=k[12539],f=c.length,b=new Buffer(3*f+4),a=0,d,e=0,l=0;l<f;)if(d=c[l++],d=(c[l++]<<8)+d,128>d)0!==e&&(e=0,b[a++]=27,b[a++]=40,b[a++]=66),b[a++]=d;else if(65377<=d&&65439>=d)1!==e&&(e=1,b[a++]=27,b[a++]=
-40,b[a++]=73),b[a++]=d-65344;else{var m=k[d];m?(2!==e&&(e=2,b[a++]=27,b[a++]=36,b[a++]=66),b[a++]=m>>8,b[a++]=m&255):(d=g[d])?(3!==e&&(e=3,b[a++]=27,b[a++]=36,b[a++]=40,b[a++]=68),b[a++]=d>>8,b[a++]=d&255):(2!==e&&(e=2,b[a++]=27,b[a++]=36,b[a++]=66),b[a++]=h>>8,b[a++]=h&255)}0!==e&&(b[a++]=27,b[a++]=40,b[a++]=66);return b.slice(0,a)}});n.defineEncoding({name:"UCS2toEUCJP",convert:function(c){for(var k=p.JISInverted,g=p.JISEXTInverted,h=k[12539],f=c.length,b=new Buffer(2*f),a=0,d,e=0;e<f;)if(d=c[e++],
-d=(c[e++]<<8)+d,128>d)b[a++]=d;else if(65377<=d&&65439>=d)b[a++]=142,b[a++]=d-65472;else{var l=k[d];l?(b[a++]=(l>>8)-128,b[a++]=(l&255)-128):(d=g[d])?(b[a++]=143,b[a++]=(d>>8)-128,b[a++]=(d&255)-128):(b[a++]=(h>>8)-128,b[a++]=(h&255)-128)}return b.slice(0,a)}});n.defineEncoding({name:"UTF8toUCS2",convert:function(c){for(var k=c.length,g=new Buffer(2*k),h=0,f,b=0;b<k;){f=c[b++];switch(f>>4){case 0:case 1:case 2:case 3:case 4:case 5:case 6:case 7:break;case 12:case 13:f=(f&31)<<6|c[b++]&63;break;case 14:f=
-(f&15)<<12|(c[b++]&63)<<6|c[b++]&63;break;default:f=(f&7)<<18|(c[b++]&63)<<12|(c[b++]&63)<<6|c[b++]&63}h=r(f,g,h)}return g.slice(0,h)}});n.defineEncoding({name:"UTF8toSJIS",convert:function(c){for(var k=p.SJISInverted,g=k[12539],h=c.length,f=new Buffer(2*h),b=0,a,d=0;d<h;){a=c[d++];switch(a>>4){case 0:case 1:case 2:case 3:case 4:case 5:case 6:case 7:break;case 12:case 13:a=(a&31)<<6|c[d++]&63;break;case 14:a=(a&15)<<12|(c[d++]&63)<<6|c[d++]&63;break;default:a=(a&7)<<18|(c[d++]&63)<<12|(c[d++]&63)<<
-6|c[d++]&63}128>a?f[b++]=a:65377<=a&&65439>=a?f[b++]=a-65216:(a=k[a]||g,f[b++]=a>>8,f[b++]=a&255)}return f.slice(0,b)}});n.defineEncoding({name:"UTF8toJIS",convert:function(c){for(var k=p.JISInverted,g=p.JISEXTInverted,h=k[12539],f=c.length,b=new Buffer(3*f+4),a=0,d,e=0,l=0;l<f;){d=c[l++];switch(d>>4){case 0:case 1:case 2:case 3:case 4:case 5:case 6:case 7:break;case 12:case 13:d=(d&31)<<6|c[l++]&63;break;case 14:d=(d&15)<<12|(c[l++]&63)<<6|c[l++]&63;break;default:d=(d&7)<<18|(c[l++]&63)<<12|(c[l++]&
-63)<<6|c[l++]&63}if(128>d)0!==e&&(e=0,b[a++]=27,b[a++]=40,b[a++]=66),b[a++]=d;else if(65377<=d&&65439>=d)1!==e&&(e=1,b[a++]=27,b[a++]=40,b[a++]=73),b[a++]=d-65344;else{var m=k[d];m?(2!==e&&(e=2,b[a++]=27,b[a++]=36,b[a++]=66),b[a++]=m>>8,b[a++]=m&255):(d=g[d])?(3!==e&&(e=3,b[a++]=27,b[a++]=36,b[a++]=40,b[a++]=68),b[a++]=d>>8,b[a++]=d&255):(2!==e&&(e=2,b[a++]=27,b[a++]=36,b[a++]=66),b[a++]=h>>8,b[a++]=h&255)}}0!==e&&(b[a++]=27,b[a++]=40,b[a++]=66);return b.slice(0,a)}});n.defineEncoding({name:"UTF8toEUCJP",
-convert:function(c){for(var k=p.JISInverted,g=p.JISEXTInverted,h=k[12539],f=c.length,b=new Buffer(2*f),a=0,d,e=0;e<f;){d=c[e++];switch(d>>4){case 0:case 1:case 2:case 3:case 4:case 5:case 6:case 7:break;case 12:case 13:d=(d&31)<<6|c[e++]&63;break;case 14:d=(d&15)<<12|(c[e++]&63)<<6|c[e++]&63;break;default:d=(d&7)<<18|(c[e++]&63)<<12|(c[e++]&63)<<6|c[e++]&63}if(128>d)b[a++]=d;else if(65377<=d&&65439>=d)b[a++]=142,b[a++]=d-65472;else{var l=k[d];l?(b[a++]=(l>>8)-128,b[a++]=(l&255)-128):(d=g[d])?(b[a++]=
-143,b[a++]=(d>>8)-128,b[a++]=(d&255)-128):(b[a++]=(h>>8)-128,b[a++]=(h&255)-128)}}return b.slice(0,a)}});n.defineEncoding({name:"SJIStoUCS2",convert:function(c){for(var k=p.SJIS,g=c.length,h=new Buffer(3*g),f=0,b,a=0;a<g;)b=c[a++],128>b||(160<=b&&223>=b?b+=65216:(b=(b<<8)+c[a++],b=k[b]||12539)),f=r(b,h,f);return h.slice(0,f)}});n.defineEncoding({name:"SJIStoUTF8",convert:function(c){for(var k=p.SJIS,g=c.length,h=new Buffer(3*g),f=0,b,a=0;a<g;)b=c[a++],128>b||(160<=b&&223>=b?b+=65216:(b=(b<<8)+c[a++],
-b=k[b]||12539)),f=q(b,h,f);return h.slice(0,f)}});n.defineEncoding({name:"SJIStoJIS",convert:function(c){for(var k=p.SJIS,g=p.JISInverted,h=c.length,f=new Buffer(3*h+4),b=0,a=0,d=0;d<h;){var e=c[d++];if(128>e)0!==a&&(a=0,f[b++]=27,f[b++]=40,f[b++]=66),f[b++]=e;else if(161<=e&&223>=e)1!==a&&(a=1,f[b++]=27,f[b++]=40,f[b++]=73),f[b++]=e-128;else if(238>=e){2!==a&&(a=2,f[b++]=27,f[b++]=36,f[b++]=66);var l=c[d++],e=e<<1;159>l?(e=319>e?e-225:e-97,l=126<l?l-32:l-31):(e=319>e?e-224:e-96,l-=126);f[b++]=e;
-f[b++]=l}else 250<=e&&(2!==a&&(a=2,f[b++]=27,f[b++]=36,f[b++]=66),e=(e<<8)+c[d++],e=g[k[e]||12539],f[b++]=e>>8,f[b++]=e&255)}0!==a&&(f[b++]=27,f[b++]=40,f[b++]=66);return f.slice(0,b)}});n.defineEncoding({name:"SJIStoEUCJP",convert:function(c){for(var k=p.SJIS,g=p.JISInverted,h=c.length,f=new Buffer(2*h),b=0,a=0;a<h;){var d=c[a++];if(128>d)f[b++]=d;else if(161<=d&&223>=d)f[b++]=142,f[b++]=d;else if(238>=d){var e=c[a++],d=d<<1;159>e?(d=319>d?d-97:d-225,e=126<e?e+96:e+97):(d=319>d?d-96:d-224,e+=2);
-f[b++]=d;f[b++]=e}else 250<=d&&(d=(d<<8)+c[a++],d=g[k[d]||12539],f[b++]=(d>>8)-128,f[b++]=(d&255)-128)}return f.slice(0,b)}});n.defineEncoding({name:"JIStoUCS2",convert:function(c){for(var k=p.JIS,g=p.JISEXT,h=c.length,f=new Buffer(2*h),b=0,a,d=0,e=0;e<h;){var l=c[e++];if(27===l){var l=c[e++],m=c[e++];switch(l){case 40:66===m||161===c?d=0:73===m&&(d=1);break;case 38:d=2;e+=3;break;case 36:64===m||66===m?d=2:40===m&&(d=3,e++)}}else{switch(d){case 0:a=l;break;case 1:a=l+65344;break;case 2:a=(l<<8)+
-c[e++];a=k[a]||12539;break;case 3:a=(l<<8)+c[e++],a=g[a]||12539}b=r(a,f,b)}}return f.slice(0,b)}});n.defineEncoding({name:"JIStoUTF8",convert:function(c){for(var k=p.JIS,g=p.JISEXT,h=c.length,f=new Buffer(2*h),b=0,a,d=0,e=0;e<h;){var l=c[e++];if(27===l){var l=c[e++],m=c[e++];switch(l){case 40:66===m||161===c?d=0:73===m&&(d=1);break;case 38:d=2;e+=3;break;case 36:64===m||66===m?d=2:40===m&&(d=3,e++)}}else{switch(d){case 0:a=l;break;case 1:a=l+65344;break;case 2:a=(l<<8)+c[e++];a=k[a]||12539;break;
-case 3:a=(l<<8)+c[e++],a=g[a]||12539}b=q(a,f,b)}}return f.slice(0,b)}});n.defineEncoding({name:"JIStoSJIS",convert:function(c){for(var k=p.SJIS,g=p.SJISInverted,h=g[12539],f=c.length,b=new Buffer(2*f),a=0,d=0,e=0;e<f;){var l=c[e++];if(27===l){var m=c[e++],l=c[e++];switch(m){case 40:66===l||161===c?d=0:73===l&&(d=1);break;case 38:d=2;e+=3;break;case 36:64===l||66===l?d=2:40===l&&(d=3,e++)}}else switch(d){case 0:b[a++]=l;break;case 1:b[a++]=l+128;break;case 2:m=c[e++];l&1?(l>>=1,l=47>l?l+113:l-79,m=
-95<m?m+32:m+31):(l>>=1,l=47>=l?l+112:l-80,m+=126);var n=((l&255)<<8)+m;60736<=n&&61180>=n&&(m=g[k[n]]||h,l=m>>8,m&=255);b[a++]=l;b[a++]=m;break;case 3:b[a++]=h>>8,b[a++]=h&255,e++}}return b.slice(0,a)}});n.defineEncoding({name:"JIStoEUCJP",convert:function(c){for(var k=c.length,g=new Buffer(2*k),h=0,f=0,b=0;b<k;){var a=c[b++];if(27===a){var a=c[b++],d=c[b++];switch(a){case 40:66===d||161===c?f=0:73===d&&(f=1);break;case 38:f=2;b+=3;break;case 36:64===d||66===d?f=2:40===d&&(f=3,b++)}}else switch(f){case 0:g[h++]=
-a;break;case 1:g[h++]=142;g[h++]=a+128;break;case 2:g[h++]=a+128;g[h++]=c[b++]+128;break;case 3:g[h++]=143,g[h++]=a+128,g[h++]=c[b++]+128}}return g.slice(0,h)}});n.defineEncoding({name:"EUCJPtoUCS2",convert:function(c){for(var k=p.JIS,g=p.JISEXT,h=c.length,f=new Buffer(2*h),b=0,a,d=0;d<h;){a=c[d++];if(!(128>a))if(142===a)a=c[d++]+65216;else if(143===a){a=c[d++]-128;var e=c[d++]-128;a=(a<<8)+e;a=g[a]||12539}else e=a-128,a=c[d++]-128,a=(e<<8)+a,a=k[a]||12539;b=r(a,f,b)}return f.slice(0,b)}});n.defineEncoding({name:"EUCJPtoUTF8",
-convert:function(c){for(var k=p.JIS,g=p.JISEXT,h=c.length,f=new Buffer(2*h),b=0,a,d=0;d<h;){a=c[d++];if(!(128>a))if(142===a)a=c[d++]+65216;else if(143===a){a=c[d++]-128;var e=c[d++]-128;a=(a<<8)+e;a=g[a]||12539}else e=a-128,a=c[d++]-128,a=(e<<8)+a,a=k[a]||12539;b=q(a,f,b)}return f.slice(0,b)}});n.defineEncoding({name:"EUCJPtoSJIS",convert:function(c){for(var k=p.SJIS,g=p.SJISInverted,h=g[12539],f=c.length,b=new Buffer(2*f),a=0,d=0;d<f;){var e=c[d++];if(128>e)b[a++]=e;else if(142===e)b[a++]=c[d++];
-else if(143===e)b[a++]=h>>8,b[a++]=h&255,d+=2;else{var l=c[d++];e&1?(e>>=1,e=111>e?e+49:e+113,l=223<l?l-96:l-97):(e>>=1,e=111>=e?e+48:e+112,l-=2);var m=((e&255)<<8)+l;60736<=m&&61180>=m&&(l=g[k[m]]||h,e=l>>8,l&=255);b[a++]=e;b[a++]=l}}return b.slice(0,a)}});n.defineEncoding({name:"EUCJPtoJIS",convert:function(c){for(var k=c.length,g=new Buffer(3*k+4),h=0,f=0,b=0;b<k;){var a=c[b++];128>a?(0!==f&&(f=0,g[h++]=27,g[h++]=40,g[h++]=66),g[h++]=a):(142===a?1!==f&&(f=1,g[h++]=27,g[h++]=40,g[h++]=73):143===
-a?(3!==f&&(f=3,g[h++]=27,g[h++]=36,g[h++]=40,g[h++]=68),g[h++]=c[b++]-128):(2!==f&&(f=2,g[h++]=27,g[h++]=36,g[h++]=66),g[h++]=a-128),g[h++]=c[b++]-128)}0!==f&&(g[h++]=27,g[h++]=40,g[h++]=66);return g.slice(0,h)}})})();
+/*! ------------------------------------------------------
+
+	Jconv
+
+	Copyright (c) 2013 narirou
+	MIT Licensed
+
+------------------------------------------------------- */
+
+( function() {
+
+	'use strict';
+
+	var unknown = '・'.charCodeAt( 0 );
+
+	var tables = {
+		'SJIS':           require( './tables/SJIS' ),
+		'JIS':            require( './tables/JIS' ),
+		'JISEXT':         require( './tables/JISEXT' ),
+		'SJISInverted':   require( './tables/SJISInverted' ),
+		'JISInverted':    require( './tables/JISInverted' ),
+		'JISEXTInverted': require( './tables/JISEXTInverted' )
+	};
+
+	var encodings = {};
+
+	var jconv = module.exports = function( buf, from, to ) {
+		return jconv.convert( buf, from, to );
+	};
+
+	jconv.defineEncoding = function( obj ) {
+		var Encoding = function( obj ) {
+			this.name = obj.name;
+			this.convert = obj.convert;
+		};
+		encodings[ obj.name ] = new Encoding( obj );
+	};
+
+	jconv.convert = function( buf, from, to ) {
+		from = getName( from );
+		to   = getName( to );
+
+		if( ! from || ! to ) {
+			throw new Error( 'Encoding not recognized.' );
+		}
+
+		buf = ensureBuffer( buf );
+
+		if( from === to ) {
+			return buf;
+		}
+
+		// Directly convert if possible.
+		var encoder = encodings[ from + 'to' + to ];
+		if( encoder ) {
+			return encoder.convert( buf );
+		}
+
+		var uniDecoder = encodings[ from + 'toUCS2' ],
+			uniEncoder = encodings[ 'UCS2to' + to ];
+		if( uniDecoder && uniEncoder ) {
+			return uniEncoder.convert( uniDecoder.convert( buf ) );
+		}
+		else {
+			throw new Error( 'Encoding not recognized.' );
+		}
+	};
+
+	jconv.decode = function( buf, from ) {
+		switch( from.toUpperCase() ) {
+			// Internal Encoding
+			case 'BINARY':
+			case 'BASE64':
+			case 'ASCII':
+			case 'HEX':
+			case 'UTF8':
+			case 'UTF-8':
+			case 'UNICODE':
+			case 'UCS2':
+			case 'UCS-2':
+			case 'UTF16LE':
+			case 'UTF-16LE':
+				return buf.toString( from );
+			default:
+				return jconv.convert( buf, from, 'UCS2' ).toString( 'UCS2' );
+		}
+	};
+
+	jconv.encode = function( str, to ) {
+		switch( to.toUpperCase() ) {
+			// Internal Encoding
+			case 'BASE64':
+			case 'ASCII':
+			case 'HEX':
+			case 'UTF8':
+			case 'UTF-8':
+				return new Buffer( str, to );
+			default:
+				return jconv.convert( str, 'UTF8', to );
+		}
+	};
+
+	jconv.encodingExists = function( encoding ) {
+		return getName( encoding ) ? true : false;
+	};
+
+	function getName( name ) {
+		switch( name.toUpperCase() ) {
+			case 'WINDOWS-31J':
+			case 'CP932':
+			case 'SJIS':
+			case 'SHIFTJIS':
+			case 'SHIFT_JIS':
+				return 'SJIS';
+			case 'EUCJP':
+			case 'EUC-JP':
+				return 'EUCJP';
+			case 'JIS':
+			case 'ISO2022JP':
+			case 'ISO-2022-JP':
+			case 'ISO-2022-JP-1':
+				return 'JIS';
+			case 'UTF8':
+			case 'UTF-8':
+				return 'UTF8';
+			case 'UNICODE':
+			case 'UCS2':
+			case 'UCS-2':
+			case 'UTF16LE':
+			case 'UTF-16LE':
+				return 'UCS2';
+			default:
+				return '';
+		}
+	}
+
+	function ensureBuffer( buf ) {
+		buf = buf || new Buffer( 0 );
+		return ( buf instanceof Buffer ) ? buf : new Buffer( buf.toString(), 'UTF8' );
+	}
+
+	// Unicode CharCode -> UTF8 Buffer
+	function setUtf8Buffer( unicode, utf8Buffer, offset ) {
+		if( unicode < 0x80 ) {
+			utf8Buffer[ offset++ ] = unicode;
+		}
+		else if( unicode < 0x800 ) {
+			utf8Buffer[ offset++ ] = 0xC0 | unicode >>>  6       ;
+			utf8Buffer[ offset++ ] = 0x80 | unicode        & 0x3F;
+		}
+		else if( unicode < 0x10000 ) {
+			utf8Buffer[ offset++ ] = 0xE0 | unicode >>> 12       ;
+			utf8Buffer[ offset++ ] = 0x80 | unicode >>>  6 & 0x3F;
+			utf8Buffer[ offset++ ] = 0x80 | unicode        & 0x3F;
+		}
+		else if( unicode < 0x200000 ) {
+			utf8Buffer[ offset++ ] = 0xF0 | unicode >>> 18       ;
+			utf8Buffer[ offset++ ] = 0x80 | unicode >>> 12 & 0x3F;
+			utf8Buffer[ offset++ ] = 0x80 | unicode >>>  6 & 0x3F;
+			utf8Buffer[ offset++ ] = 0x80 | unicode        & 0x3F;
+		}
+		else if( unicode < 0x4000000 ) {
+			utf8Buffer[ offset++ ] = 0xF8 | unicode >>> 24       ;
+			utf8Buffer[ offset++ ] = 0x80 | unicode >>> 18 & 0x3F;
+			utf8Buffer[ offset++ ] = 0x80 | unicode >>> 12 & 0x3F;
+			utf8Buffer[ offset++ ] = 0x80 | unicode >>>  6 & 0x3F;
+			utf8Buffer[ offset++ ] = 0x80 | unicode        & 0x3F;
+		}
+		else {
+			// ( >>>32 ) is not possible in ECMAScript. So use ( /0x40000000 ).
+			utf8Buffer[ offset++ ] = 0xFC | unicode  / 0x40000000;
+			utf8Buffer[ offset++ ] = 0x80 | unicode >>> 24 & 0x3F;
+			utf8Buffer[ offset++ ] = 0x80 | unicode >>> 18 & 0x3F;
+			utf8Buffer[ offset++ ] = 0x80 | unicode >>> 12 & 0x3F;
+			utf8Buffer[ offset++ ] = 0x80 | unicode >>>  6 & 0x3F;
+			utf8Buffer[ offset++ ] = 0x80 | unicode        & 0x3F;
+		}
+		return offset;
+	}
+
+	function setUnicodeBuffer( unicode, unicodeBuffer, offset ) {
+		unicodeBuffer[ offset++ ] = unicode & 0xFF;
+		unicodeBuffer[ offset++ ] = unicode >> 8;
+		return offset;
+	}
+
+	// UCS2 = UTF16LE(no-BOM)
+	// UCS2 -> UTF8
+	jconv.defineEncoding({
+		name: 'UCS2toUTF8',
+
+		convert: function( buf ) {
+			var setUtf8Buf = setUtf8Buffer;
+
+			var len        = buf.length,
+				utf8Buf = new Buffer( len * 3 ),
+				offset     = 0,
+				unicode;
+
+			for( var i = 0; i < len; ) {
+				var buf1 = buf[ i++ ],
+					buf2 = buf[ i++ ];
+
+				unicode = ( buf2 << 8 ) + buf1;
+
+				offset = setUtf8Buf( unicode, utf8Buf, offset );
+			}
+			return utf8Buf.slice( 0, offset );
+		}
+	});
+
+	// UCS2 -> SJIS
+	jconv.defineEncoding({
+		name: 'UCS2toSJIS',
+
+		convert: function( buf ) {
+			var tableSjisInv = tables[ 'SJISInverted' ],
+				unknownSjis  = tableSjisInv[ unknown ];
+
+			var len     = buf.length,
+				sjisBuf = new Buffer( len ),
+				offset  = 0,
+				unicode;
+
+			for( var i = 0; i <len; ) {
+				var buf1 = buf[ i++ ],
+					buf2 = buf[ i++ ];
+
+				unicode = ( buf2 << 8 ) + buf1;
+
+				// ASCII
+				if( unicode < 0x80 ) {
+					sjisBuf[ offset++ ] = unicode;
+				}
+				// HALFWIDTH_KATAKANA
+				else if( 0xFF61 <= unicode && unicode <= 0xFF9F ) {
+					sjisBuf[ offset++ ] = unicode - 0xFEC0;
+				}
+				// KANJI
+				else {
+					var code = tableSjisInv[ unicode ] || unknownSjis;
+					sjisBuf[ offset++ ] = code >> 8;
+					sjisBuf[ offset++ ] = code & 0xFF;
+				}
+			}
+			return sjisBuf.slice( 0, offset );
+		}
+	});
+
+	// UCS2 -> JIS
+	jconv.defineEncoding({
+		name: 'UCS2toJIS',
+
+		convert: function( buf ) {
+			var tableJisInv    = tables[ 'JISInverted' ],
+				tableJisExtInv = tables[ 'JISEXTInverted' ],
+				unknownJis     = tableJisInv[ unknown ];
+
+			var len      = buf.length,
+				jisBuf   = new Buffer( len * 3 + 4 ),
+				offset   = 0,
+				unicode,
+				sequence = 0;
+
+			for( var i = 0; i < len; ) {
+				var buf1 = buf[ i++ ],
+					buf2 = buf[ i++ ];
+
+				unicode = ( buf2 << 8 ) + buf1;
+
+				// ASCII
+				if( unicode < 0x80 ) {
+					if( sequence !== 0 ) {
+						sequence = 0;
+						jisBuf[ offset++ ] = 0x1B;
+						jisBuf[ offset++ ] = 0x28;
+						jisBuf[ offset++ ] = 0x42;
+					}
+					jisBuf[ offset++ ] = unicode;
+				}
+				// HALFWIDTH_KATAKANA
+				else if( 0xFF61 <= unicode && unicode <= 0xFF9F ) {
+					if( sequence !== 1 ) {
+						sequence = 1;
+						jisBuf[ offset++ ] = 0x1B;
+						jisBuf[ offset++ ] = 0x28;
+						jisBuf[ offset++ ] = 0x49;
+					}
+					jisBuf[ offset++ ] = unicode - 0xFF40;
+				}
+				else {
+					var code = tableJisInv[ unicode ];
+					if( code ) {
+						// KANJI
+						if( sequence !== 2 ) {
+							sequence = 2;
+							jisBuf[ offset++ ] = 0x1B;
+							jisBuf[ offset++ ] = 0x24;
+							jisBuf[ offset++ ] = 0x42;
+						}
+						jisBuf[ offset++ ] = code >> 8;
+						jisBuf[ offset++ ] = code & 0xFF;
+					}
+					else {
+						var ext = tableJisExtInv[ unicode ];
+						if( ext ) {
+							// EXTENSION
+							if( sequence !== 3 ) {
+								sequence = 3;
+								jisBuf[ offset++ ] = 0x1B;
+								jisBuf[ offset++ ] = 0x24;
+								jisBuf[ offset++ ] = 0x28;
+								jisBuf[ offset++ ] = 0x44;
+							}
+							jisBuf[ offset++ ] = ext >> 8;
+							jisBuf[ offset++ ] = ext & 0xFF;
+						}
+						else {
+							// UNKNOWN
+							if( sequence !== 2 ) {
+								sequence = 2;
+								jisBuf[ offset++ ] = 0x1B;
+								jisBuf[ offset++ ] = 0x24;
+								jisBuf[ offset++ ] = 0x42;
+							}
+							jisBuf[ offset++ ] = unknownJis >> 8;
+							jisBuf[ offset++ ] = unknownJis & 0xFF;
+						}
+					}
+				}
+			}
+
+			// Add ASCII ESC
+			if( sequence !== 0 ) {
+				sequence = 0;
+				jisBuf[ offset++ ] = 0x1B;
+				jisBuf[ offset++ ] = 0x28;
+				jisBuf[ offset++ ] = 0x42;
+			}
+			return	jisBuf.slice( 0, offset );
+		}
+	});
+
+	// UCS2 -> EUCJP
+	jconv.defineEncoding({
+		name: 'UCS2toEUCJP',
+
+		convert: function( buf ) {
+			var tableJisInv    = tables[ 'JISInverted' ],
+				tableJisExtInv = tables[ 'JISEXTInverted' ],
+				unknownJis     = tableJisInv[ unknown ];
+
+			var len     = buf.length,
+				eucBuf  = new Buffer( len * 2 ),
+				offset  = 0,
+				unicode;
+
+			for( var i = 0; i < len; ) {
+				var buf1 = buf[ i++ ],
+					buf2 = buf[ i++ ];
+
+				unicode = ( buf2 << 8 ) + buf1;
+
+				// ASCII
+				if( unicode < 0x80 ) {
+					eucBuf[ offset++ ] = unicode;
+				}
+				// HALFWIDTH_KATAKANA
+				else if( 0xFF61 <= unicode && unicode <= 0xFF9F ) {
+					eucBuf[ offset++ ] = 0x8E;
+					eucBuf[ offset++ ] = unicode - 0xFFC0;
+				}
+				else {
+					// KANJI
+					var jis = tableJisInv[ unicode ];
+					if( jis ) {
+						eucBuf[ offset++ ] = ( jis >> 8 ) - 0x80;
+						eucBuf[ offset++ ] = ( jis & 0xFF ) - 0x80;
+					}
+					else {
+						// EXTENSION
+						var ext = tableJisExtInv[ unicode ];
+						if( ext ) {
+							eucBuf[ offset++ ] = 0x8F;
+							eucBuf[ offset++ ] = ( ext >> 8 ) - 0x80;
+							eucBuf[ offset++ ] = ( ext & 0xFF ) - 0x80;
+						}
+						// UNKNOWN
+						else {
+							eucBuf[ offset++ ] = ( unknownJis >> 8 ) - 0x80;
+							eucBuf[ offset++ ] = ( unknownJis & 0xFF ) - 0x80;
+						}
+					}
+				}
+			}
+			return eucBuf.slice( 0, offset );
+		}
+	});
+
+	// UTF8 -> UCS2
+	jconv.defineEncoding({
+		name: 'UTF8toUCS2',
+
+		convert: function( buf ) {
+			var setUnicodeBuf = setUnicodeBuffer;
+
+			var len        = buf.length,
+				unicodeBuf = new Buffer( len * 2 ),
+				offset     = 0,
+				unicode;
+
+			for( var i = 0; i < len; ) {
+				var buf1 = buf[ i++ ];
+
+				switch( buf1 >> 4 ) {
+					case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:
+						unicode = buf1;
+					break;
+					case 12: case 13:
+						unicode = (buf1 & 0x1F) <<  6 | buf[ i++ ] & 0x3F;
+					break;
+					case 14:
+						unicode = (buf1 & 0x0F) << 12 | (buf[ i++ ] & 0x3F) <<  6 | buf[ i++ ] & 0x3F;
+					break;
+					default:
+						unicode = (buf1 & 0x07) << 18 | (buf[ i++ ] & 0x3F) << 12 | (buf[ i++ ] & 0x3F) << 6 | buf[ i++ ] & 0x3F;
+					break;
+				}
+				offset = setUnicodeBuf( unicode, unicodeBuf, offset );
+			}
+			return unicodeBuf.slice( 0, offset );
+		}
+	});
+
+	// UTF8 -> SJIS
+	jconv.defineEncoding({
+		name: 'UTF8toSJIS',
+
+		convert: function( buf ) {
+			var tableSjisInv = tables[ 'SJISInverted' ],
+				unknownSjis  = tableSjisInv[ unknown ];
+
+			var len     = buf.length,
+				sjisBuf = new Buffer( len * 2 ),
+				offset  = 0,
+				unicode;
+
+			for( var i = 0; i <len; ) {
+				var buf1 = buf[ i++ ];
+
+				switch( buf1 >> 4 ) {
+					case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:
+						unicode = buf1;
+					break;
+					case 12: case 13:
+						unicode = (buf1 & 0x1F) <<  6 | buf[ i++ ] & 0x3F;
+					break;
+					case 14:
+						unicode = (buf1 & 0x0F) << 12 | (buf[ i++ ] & 0x3F) <<  6 | buf[ i++ ] & 0x3F;
+					break;
+					default:
+						unicode = (buf1 & 0x07) << 18 | (buf[ i++ ] & 0x3F) << 12 | (buf[ i++ ] & 0x3F) << 6 | buf[ i++ ] & 0x3F;
+					break;
+				}
+
+				// ASCII
+				if( unicode < 0x80 ) {
+					sjisBuf[ offset++ ] = unicode;
+				}
+				// HALFWIDTH_KATAKANA
+				else if( 0xFF61 <= unicode && unicode <= 0xFF9F ) {
+					sjisBuf[ offset++ ] = unicode - 0xFEC0;
+				}
+				// KANJI
+				else {
+					var code = tableSjisInv[ unicode ] || unknownSjis;
+					sjisBuf[ offset++ ] = code >> 8;
+					sjisBuf[ offset++ ] = code & 0xFF;
+				}
+			}
+			return sjisBuf.slice( 0, offset );
+		}
+	});
+
+	// UTF8 -> JIS
+	jconv.defineEncoding({
+		name: 'UTF8toJIS',
+
+		convert: function( buf ) {
+			var tableJisInv    = tables[ 'JISInverted' ],
+				tableJisExtInv = tables[ 'JISEXTInverted' ],
+				unknownJis     = tableJisInv[ unknown ];
+
+			var len      = buf.length,
+				jisBuf   = new Buffer( len * 3 + 4 ),
+				offset   = 0,
+				unicode,
+				sequence = 0;
+
+			for( var i = 0; i < len; ) {
+				var buf1 = buf[ i++ ];
+
+				switch( buf1 >> 4 ) {
+					case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:
+						unicode = buf1;
+					break;
+					case 12: case 13:
+						unicode = (buf1 & 0x1F) <<  6 | buf[ i++ ] & 0x3F;
+					break;
+					case 14:
+						unicode = (buf1 & 0x0F) << 12 | (buf[ i++ ] & 0x3F) <<  6 | buf[ i++ ] & 0x3F;
+					break;
+					default:
+						unicode = (buf1 & 0x07) << 18 | (buf[ i++ ] & 0x3F) << 12 | (buf[ i++ ] & 0x3F) << 6 | buf[ i++ ] & 0x3F;
+					break;
+				}
+
+				// ASCII
+				if( unicode < 0x80 ) {
+					if( sequence !== 0 ) {
+						sequence = 0;
+						jisBuf[ offset++ ] = 0x1B;
+						jisBuf[ offset++ ] = 0x28;
+						jisBuf[ offset++ ] = 0x42;
+					}
+					jisBuf[ offset++ ] = unicode;
+				}
+				// HALFWIDTH_KATAKANA
+				else if( 0xFF61 <= unicode && unicode <= 0xFF9F ) {
+					if( sequence !== 1 ) {
+						sequence = 1;
+						jisBuf[ offset++ ] = 0x1B;
+						jisBuf[ offset++ ] = 0x28;
+						jisBuf[ offset++ ] = 0x49;
+					}
+					jisBuf[ offset++ ] = unicode - 0xFF40;
+				}
+				else {
+					var code = tableJisInv[ unicode ];
+					if( code ) {
+						// KANJI
+						if( sequence !== 2 ) {
+							sequence = 2;
+							jisBuf[ offset++ ] = 0x1B;
+							jisBuf[ offset++ ] = 0x24;
+							jisBuf[ offset++ ] = 0x42;
+						}
+						jisBuf[ offset++ ] = code >> 8;
+						jisBuf[ offset++ ] = code & 0xFF;
+					}
+					else {
+						var ext = tableJisExtInv[ unicode ];
+						if( ext ) {
+							// EXTENSION
+							if( sequence !== 3 ) {
+								sequence = 3;
+								jisBuf[ offset++ ] = 0x1B;
+								jisBuf[ offset++ ] = 0x24;
+								jisBuf[ offset++ ] = 0x28;
+								jisBuf[ offset++ ] = 0x44;
+							}
+							jisBuf[ offset++ ] = ext >> 8;
+							jisBuf[ offset++ ] = ext & 0xFF;
+						}
+						else {
+							// UNKNOWN
+							if( sequence !== 2 ) {
+								sequence = 2;
+								jisBuf[ offset++ ] = 0x1B;
+								jisBuf[ offset++ ] = 0x24;
+								jisBuf[ offset++ ] = 0x42;
+							}
+							jisBuf[ offset++ ] = unknownJis >> 8;
+							jisBuf[ offset++ ] = unknownJis & 0xFF;
+						}
+					}
+				}
+			}
+
+			// Add ASCII ESC
+			if( sequence !== 0 ) {
+				sequence = 0;
+				jisBuf[ offset++ ] = 0x1B;
+				jisBuf[ offset++ ] = 0x28;
+				jisBuf[ offset++ ] = 0x42;
+			}
+			return jisBuf.slice( 0, offset );
+		}
+	});
+
+	// UTF8 -> EUCJP
+	jconv.defineEncoding({
+		name: 'UTF8toEUCJP',
+
+		convert: function( buf ) {
+			var tableJisInv    = tables[ 'JISInverted' ],
+				tableJisExtInv = tables[ 'JISEXTInverted' ],
+				unknownJis     = tableJisInv[ unknown ];
+
+			var len     = buf.length,
+				eucBuf  = new Buffer( len * 2 ),
+				offset  = 0,
+				unicode;
+
+			for( var i = 0; i < len; ) {
+				var buf1 = buf[ i++ ];
+
+				switch( buf1 >> 4 ) {
+					case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:
+						unicode = buf1;
+					break;
+					case 12: case 13:
+						unicode = (buf1 & 0x1F) <<  6 | buf[ i++ ] & 0x3F;
+					break;
+					case 14:
+						unicode = (buf1 & 0x0F) << 12 | (buf[ i++ ] & 0x3F) <<  6 | buf[ i++ ] & 0x3F;
+					break;
+					default:
+						unicode = (buf1 & 0x07) << 18 | (buf[ i++ ] & 0x3F) << 12 | (buf[ i++ ] & 0x3F) << 6 | buf[ i++ ] & 0x3F;
+					break;
+				}
+
+				// ASCII
+				if( unicode < 0x80 ) {
+					eucBuf[ offset++ ] = unicode;
+				}
+				// HALFWIDTH_KATAKANA
+				else if( 0xFF61 <= unicode && unicode <= 0xFF9F ) {
+					eucBuf[ offset++ ] = 0x8E;
+					eucBuf[ offset++ ] = unicode - 0xFFC0;
+				}
+				else {
+					// KANJI
+					var jis = tableJisInv[ unicode ];
+					if( jis ) {
+						eucBuf[ offset++ ] = ( jis >> 8 ) - 0x80;
+						eucBuf[ offset++ ] = ( jis & 0xFF ) - 0x80;
+					}
+					else {
+						// EXTENSION
+						var ext = tableJisExtInv[ unicode ];
+						if( ext ) {
+							eucBuf[ offset++ ] = 0x8F;
+							eucBuf[ offset++ ] = ( ext >> 8 ) - 0x80;
+							eucBuf[ offset++ ] = ( ext & 0xFF ) - 0x80;
+						}
+						// UNKNOWN
+						else {
+							eucBuf[ offset++ ] = ( unknownJis >> 8 ) - 0x80;
+							eucBuf[ offset++ ] = ( unknownJis & 0xFF ) - 0x80;
+						}
+					}
+				}
+			}
+			return eucBuf.slice( 0, offset );
+		}
+	});
+
+	// SJIS -> UCS2
+	jconv.defineEncoding({
+		name: 'SJIStoUCS2',
+
+		convert: function( buf ) {
+			var tableSjis     = tables[ 'SJIS' ],
+				setUnicodeBuf = setUnicodeBuffer;
+
+			var len        = buf.length,
+				unicodeBuf = new Buffer( len * 3 ),
+				offset     = 0,
+				unicode;
+
+			for( var i = 0; i < len; ) {
+				var buf1 = buf[ i++ ];
+
+				// ASCII
+				if( buf1 < 0x80 ) {
+					unicode = buf1;
+				}
+				// HALFWIDTH_KATAKANA
+				else if( 0xA0 <= buf1 && buf1 <= 0xDF ) {
+					unicode = buf1 + 0xFEC0;
+				}
+				// KANJI
+				else {
+					var code = ( buf1 << 8 ) + buf[ i++ ];
+					unicode  = tableSjis[ code ] || unknown;
+				}
+				offset = setUnicodeBuf( unicode, unicodeBuf, offset );
+			}
+			return unicodeBuf.slice( 0, offset );
+		}
+	});
+
+	// SJIS -> UTF8
+	jconv.defineEncoding({
+		name: 'SJIStoUTF8',
+
+		convert: function( buf ) {
+			var tableSjis = tables[ 'SJIS' ],
+				setUtf8Buf = setUtf8Buffer;
+
+			var len     = buf.length,
+				utf8Buf = new Buffer( len * 3 ),
+				offset  = 0,
+				unicode;
+
+			for( var i = 0; i < len; ) {
+				var buf1 = buf[ i++ ];
+
+				// ASCII
+				if( buf1 < 0x80 ) {
+					unicode = buf1;
+				}
+				// HALFWIDTH_KATAKANA
+				else if( 0xA0 <= buf1 && buf1 <= 0xDF ) {
+					unicode = buf1 + 0xFEC0;
+				}
+				// KANJI
+				else {
+					var code = ( buf1 << 8 ) + buf[ i++ ];
+					unicode  = tableSjis[ code ] || unknown;
+				}
+				offset = setUtf8Buf( unicode, utf8Buf, offset );
+			}
+			return utf8Buf.slice( 0, offset );
+		}
+	});
+
+	// SJIS -> JIS
+	jconv.defineEncoding({
+		name: 'SJIStoJIS',
+
+		convert: function( buf ) {
+			var tableSjis   = tables[ 'SJIS' ],
+				tableJisInv = tables[ 'JISInverted' ];
+
+			var len      = buf.length,
+				jisBuf   = new Buffer( len * 3 + 4 ),
+				offset   = 0,
+				sequence = 0;
+
+			for( var i = 0; i < len; ) {
+				var buf1 = buf[ i++ ];
+
+				// ASCII
+				if( buf1 < 0x80 ) {
+					if( sequence !== 0 ) {
+						sequence = 0;
+						jisBuf[ offset++ ] = 0x1B;
+						jisBuf[ offset++ ] = 0x28;
+						jisBuf[ offset++ ] = 0x42;
+					}
+					jisBuf[ offset++ ] = buf1;
+				}
+				// HALFWIDTH_KATAKANA
+				else if( 0xA1 <= buf1 && buf1 <= 0xDF ) {
+					if( sequence !== 1 ) {
+						sequence = 1;
+						jisBuf[ offset++ ] = 0x1B;
+						jisBuf[ offset++ ] = 0x28;
+						jisBuf[ offset++ ] = 0x49;
+					}
+					jisBuf[ offset++ ] = buf1 - 0x80;
+				}
+				// KANJI
+				else if( buf1 <= 0xEE ) {
+					if( sequence !== 2 ) {
+						sequence = 2;
+						jisBuf[ offset++ ] = 0x1B;
+						jisBuf[ offset++ ] = 0x24;
+						jisBuf[ offset++ ] = 0x42;
+					}
+					var buf2 = buf[ i++ ];
+					buf1 <<= 1;
+					if( buf2 < 0x9F ) {
+						if( buf1 < 0x13F ) {
+							buf1 -= 0xE1;
+						}
+						else {
+							buf1 -= 0x61;
+						}
+						if( buf2 > 0x7E ) {
+							buf2 -= 0x20;
+						}
+						else {
+							buf2 -= 0x1F;
+						}
+					}
+					else {
+						if( buf1 < 0x13F ) {
+							buf1 -= 0xE0;
+						}
+						else {
+							buf1 -= 0x60;
+						}
+						buf2 -= 0x7E;
+					}
+					jisBuf[ offset++ ] = buf1;
+					jisBuf[ offset++ ] = buf2;
+				}
+				// IBM EXTENSION -> the other
+				else if( buf1 >= 0xFA ) {
+					if( sequence !== 2 ) {
+						sequence = 2;
+						jisBuf[ offset++ ] = 0x1B;
+						jisBuf[ offset++ ] = 0x24;
+						jisBuf[ offset++ ] = 0x42;
+					}
+					var sjis    = ( buf1 << 8 ) + buf[ i++ ],
+						unicode = tableSjis[ sjis ] || unknown,
+						code    = tableJisInv[ unicode ];
+
+					jisBuf[ offset++ ] = code >> 8;
+					jisBuf[ offset++ ] = code & 0xFF;
+				}
+			}
+
+			// Add ASCII ESC
+			if( sequence !== 0 ) {
+				sequence = 0;
+				jisBuf[ offset++ ] = 0x1B;
+				jisBuf[ offset++ ] = 0x28;
+				jisBuf[ offset++ ] = 0x42;
+			}
+			return jisBuf.slice( 0, offset );
+		}
+	});
+
+	// SJIS -> EUCJP
+	jconv.defineEncoding({
+		name: 'SJIStoEUCJP',
+
+		convert: function( buf ) {
+			var tableSjis   = tables[ 'SJIS' ],
+				tableJisInv = tables[ 'JISInverted' ];
+
+			var len     = buf.length,
+				eucBuf  = new Buffer( len * 2 ),
+				offset  = 0;
+
+			for( var i = 0; i < len; ) {
+				var buf1 = buf[ i++ ];
+
+				// ASCII
+				if( buf1 < 0x80 ) {
+					eucBuf[ offset++ ] = buf1;
+				}
+				// HALFWIDTH_KATAKANA
+				else if( 0xA1 <= buf1 && buf1 <= 0xDF ) {
+					eucBuf[ offset++ ] = 0x8E;
+					eucBuf[ offset++ ] = buf1;
+				}
+				// KANJI
+				else if( buf1 <= 0xEE ) {
+					var buf2 = buf[ i++ ];
+					buf1 <<= 1;
+					if( buf2 < 0x9F ) {
+						if( buf1 < 0x13F ) {
+							buf1 -= 0x61;
+						}
+						else {
+							buf1 -= 0xE1;
+						}
+						if( buf2 > 0x7E ) {
+							buf2 += 0x60;
+						}
+						else {
+							buf2 += 0x61;
+						}
+					}
+					else {
+						if( buf1 < 0x13F ) {
+							buf1 -= 0x60;
+						}
+						else {
+							buf1 -= 0xE0;
+						}
+						buf2 += 0x02;
+					}
+					eucBuf[ offset++ ] = buf1;
+					eucBuf[ offset++ ] = buf2;
+				}
+				// IBM EXTENSION -> the other
+				else if( buf1 >= 0xFA ) {
+					var sjis    = ( buf1 << 8 ) + buf[ i++ ],
+						unicode = tableSjis[ sjis ] || unknown,
+						jis     = tableJisInv[ unicode ];
+
+					eucBuf[ offset++ ] = ( jis >> 8 ) - 0x80;
+					eucBuf[ offset++ ] = ( jis & 0xFF ) - 0x80;
+				}
+			}
+			return eucBuf.slice( 0, offset );
+		}
+	});
+
+	// JIS -> UCS2
+	jconv.defineEncoding({
+		name: 'JIStoUCS2',
+
+		convert: function( buf ) {
+			var tableJis      = tables[ 'JIS' ],
+				tableJisExt   = tables[ 'JISEXT' ],
+				setUnicodeBuf = setUnicodeBuffer;
+
+			var len        = buf.length,
+				unicodeBuf = new Buffer( len * 2 ),
+				offset     = 0,
+				unicode,
+				sequence   = 0;
+
+			for( var i = 0; i < len; ) {
+				var buf1 = buf[ i++ ];
+
+				// ESC Sequence
+				if( buf1 === 0x1b ) {
+					var buf2 = buf[ i++ ],
+						buf3 = buf[ i++ ];
+					switch( buf2 ) {
+						case 0x28:
+							if( buf3 === 0x42 || buf === 0xA1 ) {
+								sequence = 0;
+							}
+							else if( buf3 === 0x49 ) {
+								sequence = 1;
+							}
+						break;
+						case 0x26:
+							sequence = 2;
+							i += 3;
+						break;
+						case 0x24:
+							if( buf3 === 0x40 || buf3 === 0x42 ) {
+								sequence = 2;
+							}
+							else if( buf3 === 0x28 ) {
+								sequence = 3;
+								i++;
+							}
+						break;
+					}
+					continue;
+				}
+
+				switch( sequence ) {
+					// ASCII
+					case 0:
+						unicode = buf1;
+					break;
+					// HALFWIDTH_KATAKANA
+					case 1:
+						unicode = buf1 + 0xFF40;
+					break;
+					// KANJI
+					case 2:
+						var code = ( buf1 << 8 ) + buf[ i++ ];
+						unicode  = tableJis[ code ] || unknown;
+					break;
+					// EXTENSION
+					case 3:
+						var code = ( buf1 << 8 ) + buf[ i++ ];
+						unicode  = tableJisExt[ code ] || unknown;
+					break;
+				}
+				offset = setUnicodeBuf( unicode, unicodeBuf, offset );
+			}
+			return unicodeBuf.slice( 0, offset );
+		}
+	});
+
+	// JIS -> UTF8
+	jconv.defineEncoding({
+		name: 'JIStoUTF8',
+
+		convert: function( buf ) {
+			var tableJis    = tables[ 'JIS' ],
+				tableJisExt = tables[ 'JISEXT' ],
+				setUtf8Buf   = setUtf8Buffer;
+
+			var len      = buf.length,
+				utf8Buf  = new Buffer( len * 2 ),
+				offset   = 0,
+				unicode,
+				sequence = 0;
+
+			for( var i = 0; i < len; ) {
+				var buf1 = buf[ i++ ];
+
+				// ESC Sequence
+				if( buf1 === 0x1b ) {
+					var buf2 = buf[ i++ ],
+						buf3 = buf[ i++ ];
+					switch( buf2 ) {
+						case 0x28:
+							if( buf3 === 0x42 || buf === 0xA1 ) {
+								sequence = 0;
+							}
+							else if( buf3 === 0x49 ) {
+								sequence = 1;
+							}
+						break;
+						case 0x26:
+							sequence = 2;
+							i += 3;
+						break;
+						case 0x24:
+							if( buf3 === 0x40 || buf3 === 0x42 ) {
+								sequence = 2;
+							}
+							else if( buf3 === 0x28 ) {
+								sequence = 3;
+								i++;
+							}
+						break;
+					}
+					continue;
+				}
+
+				switch( sequence ) {
+					// ASCII
+					case 0:
+						unicode = buf1;
+					break;
+					// HALFWIDTH_KATAKANA
+					case 1:
+						unicode = buf1 + 0xFF40;
+					break;
+					// KANJI
+					case 2:
+						var code = ( buf1 << 8 ) + buf[ i++ ];
+						unicode  = tableJis[ code ] || unknown;
+					break;
+					// EXTENSION
+					case 3:
+						var code = ( buf1 << 8 ) + buf[ i++ ];
+						unicode  = tableJisExt[ code ] || unknown;
+					break;
+				}
+				offset = setUtf8Buf( unicode, utf8Buf, offset );
+			}
+			return utf8Buf.slice( 0, offset );
+		}
+	});
+
+	// JIS -> SJIS
+	jconv.defineEncoding({
+		name: 'JIStoSJIS',
+
+		convert: function( buf ) {
+			var tableSjis    = tables[ 'SJIS' ],
+				tableSjisInv = tables[ 'SJISInverted' ],
+				unknownSjis  = tableSjisInv[ unknown ];
+
+			var len      = buf.length,
+				sjisBuf  = new Buffer( len * 2 ),
+				offset   = 0,
+				sequence = 0;
+
+			for( var i = 0; i < len; ) {
+				var buf1 = buf[ i++ ];
+
+				// ESC Sequence
+				if( buf1 === 0x1b ) {
+					var buf2 = buf[ i++ ],
+						buf3 = buf[ i++ ];
+					switch( buf2 ) {
+						case 0x28:
+							if( buf3 === 0x42 || buf === 0xA1 ) {
+								sequence = 0;
+							}
+							else if( buf3 === 0x49 ) {
+								sequence = 1;
+							}
+						break;
+						case 0x26:
+							sequence = 2;
+							i += 3;
+						break;
+						case 0x24:
+							if( buf3 === 0x40 || buf3 === 0x42 ) {
+								sequence = 2;
+							}
+							else if( buf3 === 0x28 ) {
+								sequence = 3;
+								i++;
+							}
+						break;
+					}
+					continue;
+				}
+
+				switch( sequence ) {
+					// ASCII
+					case 0:
+						sjisBuf[ offset++ ] = buf1;
+					break;
+					// HALFWIDTH_KATAKANA
+					case 1:
+						sjisBuf[ offset++ ] = buf1 + 0x80;
+					break;
+					// KANJI
+					case 2:
+						var buf2 = buf[ i++ ];
+						if( buf1 & 0x01 ) {
+							buf1 >>= 1;
+							if( buf1 < 0x2F ) {
+								buf1 += 0x71;
+							}
+							else {
+								buf1 -= 0x4F;
+							}
+							if( buf2 > 0x5F ) {
+								buf2 += 0x20;
+							}
+							else {
+								buf2 += 0x1F;
+							}
+						}
+						else {
+							buf1 >>= 1;
+							if( buf1 <= 0x2F ) {
+								buf1 += 0x70;
+							}
+							else {
+								buf1 -= 0x50;
+							}
+							buf2 += 0x7E;
+						}
+						// NEC SELECT IBM EXTENSION -> IBM EXTENSION.
+						var sjis = ( (buf1 & 0xFF) << 8 ) + buf2;
+						if( 0xED40 <= sjis && sjis <= 0xEEFC ) {
+							var unicode   = tableSjis[ sjis ],
+								sjisFixed = tableSjisInv[ unicode ] || unknownSjis;
+
+							buf1 = sjisFixed >> 8;
+							buf2 = sjisFixed & 0xFF;
+						}
+						sjisBuf[ offset++ ] = buf1;
+						sjisBuf[ offset++ ] = buf2;
+					break;
+					// EXTENSION
+					case 3:
+						sjisBuf[ offset++ ] = unknownSjis >> 8;
+						sjisBuf[ offset++ ] = unknownSjis & 0xFF;
+						i++;
+					break;
+				}
+			}
+			return sjisBuf.slice( 0, offset );
+		}
+	});
+
+	// JIS -> EUCJP
+	jconv.defineEncoding({
+		name: 'JIStoEUCJP',
+
+		convert: function( buf ) {
+			var len      = buf.length,
+				eucBuf   = new Buffer( len * 2 ),
+				offset   = 0,
+				sequence = 0;
+
+			for( var i = 0; i < len; ) {
+				var buf1 = buf[ i++ ];
+
+				// ESC Sequence
+				if( buf1 === 0x1b ) {
+					var buf2 = buf[ i++ ],
+						buf3 = buf[ i++ ];
+					switch( buf2 ) {
+						case 0x28:
+							if( buf3 === 0x42 || buf === 0xA1 ) {
+								sequence = 0;
+							}
+							else if( buf3 === 0x49 ) {
+								sequence = 1;
+							}
+						break;
+						case 0x26:
+							sequence = 2;
+							i += 3;
+						break;
+						case 0x24:
+							if( buf3 === 0x40 || buf3 === 0x42 ) {
+								sequence = 2;
+							}
+							else if( buf3 === 0x28 ) {
+								sequence = 3;
+								i++;
+							}
+						break;
+					}
+					continue;
+				}
+
+				switch( sequence ) {
+					// ASCII
+					case 0:
+						eucBuf[ offset++ ] = buf1;
+					break;
+					// HALFWIDTH_KATAKANA
+					case 1:
+						eucBuf[ offset++ ] = 0x8E;
+						eucBuf[ offset++ ] = buf1 + 0x80;
+					break;
+					// KANJI
+					case 2:
+						eucBuf[ offset++ ] = buf1 + 0x80;
+						eucBuf[ offset++ ] = buf[ i++ ] + 0x80;
+					break;
+					// EXTENSION
+					case 3:
+						eucBuf[ offset++ ] = 0x8F;
+						eucBuf[ offset++ ] = buf1 + 0x80;
+						eucBuf[ offset++ ] = buf[ i++ ] + 0x80;
+					break;
+				}
+			}
+			return eucBuf.slice( 0, offset );
+		}
+	});
+
+	// EUCJP -> UCS2
+	jconv.defineEncoding({
+		name: 'EUCJPtoUCS2',
+
+		convert: function( buf ) {
+			var tableJis      = tables[ 'JIS' ],
+				tableJisExt   = tables[ 'JISEXT' ],
+				setUnicodeBuf = setUnicodeBuffer;
+
+			var len        = buf.length,
+				unicodeBuf = new Buffer( len * 2 ),
+				offset     = 0,
+				unicode;
+
+			for( var i = 0; i < len; ) {
+				var buf1 = buf[ i++ ];
+
+				// ASCII
+				if( buf1 < 0x80 ) {
+					unicode = buf1;
+				}
+				// HALFWIDTH_KATAKANA
+				else if( buf1 === 0x8E ) {
+					unicode = buf[ i++ ] + 0xFEC0;
+				}
+				// EXTENSION
+				else if( buf1 === 0x8F ) {
+					var jisbuf2 = buf[ i++ ] - 0x80,
+						jisbuf3 = buf[ i++ ] - 0x80,
+						jis = ( jisbuf2 << 8 ) + jisbuf3;
+					unicode = tableJisExt[ jis ] || unknown;
+				}
+				// KANJI
+				else {
+					var jisbuf1 = buf1 - 0x80,
+						jisbuf2 = buf[ i++ ] - 0x80,
+						jis = ( jisbuf1 << 8 ) + jisbuf2;
+					unicode = tableJis[ jis ] || unknown;
+				}
+				offset = setUnicodeBuf( unicode, unicodeBuf, offset );
+			}
+			return unicodeBuf.slice( 0, offset );
+		}
+	});
+
+	// EUCJP -> UTF8
+	jconv.defineEncoding({
+		name: 'EUCJPtoUTF8',
+
+		convert: function( buf ) {
+			var tableJis    = tables[ 'JIS' ],
+				tableJisExt = tables[ 'JISEXT' ],
+				setUtf8Buf   = setUtf8Buffer;
+
+			var len     = buf.length,
+				utf8Buf = new Buffer( len * 2 ),
+				offset  = 0,
+				unicode;
+
+			for( var i = 0; i < len; ) {
+				var buf1 = buf[ i++ ];
+
+				// ASCII
+				if( buf1 < 0x80 ) {
+					unicode = buf1;
+				}
+				// HALFWIDTH_KATAKANA
+				else if( buf1 === 0x8E ) {
+					unicode = buf[ i++ ] + 0xFEC0;
+				}
+				// EXTENSION
+				else if( buf1 === 0x8F ) {
+					var jisbuf2 = buf[ i++ ] - 0x80,
+						jisbuf3 = buf[ i++ ] - 0x80,
+						jis = ( jisbuf2 << 8 ) + jisbuf3;
+					unicode = tableJisExt[ jis ] || unknown;
+				}
+				// KANJI
+				else {
+					var jisbuf1 = buf1 - 0x80,
+						jisbuf2 = buf[ i++ ] - 0x80,
+						jis = ( jisbuf1 << 8 ) + jisbuf2;
+					unicode = tableJis[ jis ] || unknown;
+				}
+				offset = setUtf8Buf( unicode, utf8Buf, offset );
+			}
+			return utf8Buf.slice( 0, offset );
+		}
+	});
+
+	// EUCJP -> SJIS
+	jconv.defineEncoding({
+		name: 'EUCJPtoSJIS',
+
+		convert: function( buf ) {
+			var tableSjis    = tables[ 'SJIS' ],
+				tableSjisInv = tables[ 'SJISInverted' ],
+				unknownSjis  = tableSjisInv[ unknown ];
+
+			var len     = buf.length,
+				sjisBuf = new Buffer( len * 2 ),
+				offset  = 0;
+
+			for( var i = 0; i < len; ) {
+				var buf1 = buf[ i++ ];
+
+				// ASCII
+				if( buf1 < 0x80 ) {
+					sjisBuf[ offset++ ] = buf1;
+				}
+				// HALFWIDTH_KATAKANA
+				else if( buf1 === 0x8E ) {
+					sjisBuf[ offset++ ] = buf[ i++ ];
+				}
+				// EXTENSION
+				else if( buf1 === 0x8F ) {
+					sjisBuf[ offset++ ] = unknownSjis >> 8;
+					sjisBuf[ offset++ ] = unknownSjis & 0xFF;
+					i += 2;
+				}
+				// KANJI
+				else {
+					var buf2 = buf[ i++ ];
+					if( buf1 & 0x01 ) {
+						buf1 >>= 1;
+						if( buf1 < 0x6F ) {
+							buf1 += 0x31;
+						}
+						else {
+							buf1 += 0x71;
+						}
+						if( buf2 > 0xDF ) {
+							buf2 -= 0x60;
+						}
+						else {
+							buf2 -= 0x61;
+						}
+					}
+					else {
+						buf1 >>= 1;
+						if( buf1 <= 0x6F ) {
+							buf1 += 0x30;
+						}
+						else {
+							buf1 += 0x70;
+						}
+						buf2 -= 0x02;
+					}
+					// NEC SELECT IBM EXTENSION -> IBM EXTENSION.
+					var sjis = ( (buf1 & 0xFF) << 8 ) + buf2;
+					if( 0xED40 <= sjis && sjis <= 0xEEFC ) {
+						var unicode   = tableSjis[ sjis ],
+							sjisFixed = tableSjisInv[ unicode ] || unknownSjis;
+
+						buf1 = sjisFixed >> 8;
+						buf2 = sjisFixed & 0xFF;
+					}
+					sjisBuf[ offset++ ] = buf1;
+					sjisBuf[ offset++ ] = buf2;
+				}
+			}
+			return sjisBuf.slice( 0, offset );
+		}
+	});
+
+	// EUCJP -> JIS
+	jconv.defineEncoding({
+		name: 'EUCJPtoJIS',
+
+		convert: function( buf ) {
+			var len      = buf.length,
+				jisBuf   = new Buffer( len * 3 + 4 ),
+				offset   = 0,
+				sequence = 0;
+
+			for( var i = 0; i < len; ) {
+				var buf1 = buf[ i++ ];
+
+				// ASCII
+				if( buf1 < 0x80 ) {
+					if( sequence !== 0 ) {
+						sequence = 0;
+						jisBuf[ offset++ ] = 0x1B;
+						jisBuf[ offset++ ] = 0x28;
+						jisBuf[ offset++ ] = 0x42;
+					}
+					jisBuf[ offset++ ] = buf1;
+				}
+				// HALFWIDTH_KATAKANA
+				else if( buf1 === 0x8E ) {
+					if( sequence !== 1 ) {
+						sequence = 1;
+						jisBuf[ offset++ ] = 0x1B;
+						jisBuf[ offset++ ] = 0x28;
+						jisBuf[ offset++ ] = 0x49;
+					}
+					jisBuf[ offset++ ] = buf[ i++ ] - 0x80;
+				}
+				// EXTENSION
+				else if( buf1 === 0x8F ) {
+					if( sequence !== 3 ) {
+						sequence = 3;
+						jisBuf[ offset++ ] = 0x1B;
+						jisBuf[ offset++ ] = 0x24;
+						jisBuf[ offset++ ] = 0x28;
+						jisBuf[ offset++ ] = 0x44;
+					}
+					jisBuf[ offset++ ] = buf[ i++ ] - 0x80;
+					jisBuf[ offset++ ] = buf[ i++ ] - 0x80;
+				}
+				// KANJI
+				else {
+					if( sequence !== 2 ) {
+						sequence = 2;
+						jisBuf[ offset++ ] = 0x1B;
+						jisBuf[ offset++ ] = 0x24;
+						jisBuf[ offset++ ] = 0x42;
+					}
+					jisBuf[ offset++ ] = buf1 - 0x80;
+					jisBuf[ offset++ ] = buf[ i++ ] - 0x80;
+				}
+			}
+
+			// Add ASCII ESC
+			if( sequence !== 0 ) {
+				sequence = 0;
+				jisBuf[ offset++ ] = 0x1B;
+				jisBuf[ offset++ ] = 0x28;
+				jisBuf[ offset++ ] = 0x42;
+			}
+			return jisBuf.slice( 0, offset );
+		}
+	});
+
+})();
 
 }).call(this)}).call(this,require("buffer").Buffer)
 },{"./tables/JIS":5,"./tables/JISEXT":6,"./tables/JISEXTInverted":7,"./tables/JISInverted":8,"./tables/SJIS":9,"./tables/SJISInverted":10,"buffer":2}],5:[function(require,module,exports){
